@@ -13,5 +13,7 @@ We measured the test subject's gaze direction, interactions with different objec
 </br>
 <img align="left" width="450" height="400" src="https://user-images.githubusercontent.com/111829337/203883019-5e42a356-c8fe-4e5c-b82a-da466939dd12.png">
 <img align="left" width="450" height="400" src="https://user-images.githubusercontent.com/111829337/203883031-efec7e1c-b094-408a-a764-0e285da01bb8.png">
+</br>
+</br>
 ## Future Use Cases
 After adding some feature, this tool could help you better understand what your user are doing in the VR app. It's like a Google Analytics but for VR.
