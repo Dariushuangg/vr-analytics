@@ -20,9 +20,10 @@ def parse():
         question = identifier[1]
         raw_data[env][question][filename] = pd.read_csv(os.path.join(path, filename),
                                                         quotechar='"',
-                                                        sep=',')
+                                                        sep=',',
+                                                        dtype=float)
     return raw_data
 
-raw_data = parse()
-df = raw_data["3"]["C"]['2022-11-25_00-22-23_3-C_I3T.txt']
-print(df.head(5))
+# raw_data = parse()
+# df = raw_data["3"]["C"]['2022-11-25_00-22-23_3-C_I3T.txt']
+# print(df.head(5))
