@@ -23,11 +23,15 @@ def clean(df: pd.DataFrame) -> None:
     df["time"] = df["time"].map(lambda x : math.floor(x))
     df["time"] = df["time"].map(lambda x : x - df["time"][1]) 
     df = df.groupby(df["time"]).aggregate({col:"last" for col in df.columns})
+    return df
     
-    print(df.head())
     
 def clean_all(raw_data):
+    """
+    Take in raw data, produce cleaned data
+    """
     for env in raw_data.keys():
         for question in raw_data[env].keys():
             for file in raw_data[env][question].keys():
-                clean(raw_data[env][question][file])
+                raw_data[env][question][file] = clean(raw_data[env][question][file])
+    return raw_data[env][question][file]
