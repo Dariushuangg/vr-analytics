@@ -34,4 +34,4 @@ def clean_all(raw_data):
         for question in raw_data[env].keys():
             for file in raw_data[env][question].keys():
                 raw_data[env][question][file] = clean(raw_data[env][question][file])
-    return raw_data[env][question][file]
+    return raw_data
