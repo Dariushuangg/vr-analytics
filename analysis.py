@@ -1,17 +1,47 @@
 from parse import parse
 from clean import *
+import pandas as pd
+import matplotlib.pyplot as plt
 import math
+
+def concentration_percent(row):
+    """Calculate the percentage of time focus on content in one duration.
+    Args:
+        row: One row in the df output by concentration
+    """
+    concentrated_frame = row["Molecule Frames"] + row["UI Frames"]
+    total_frame = row["Total Frame"]
+    if concentrated_frame > total_frame:
+        concentrated_frame = total_frame
+    percentage = concentrated_frame / total_frame
+    return percentage
+
+def concentration_analysis(cleaned_data):
+    conc = pd.DataFrame()
+    res = pd.DataFrame()
+    for env in ["1", "2", "3"]:
+        for person in cleaned_data[env]["C"].keys():
+            df = cleaned_data[env]["C"][person]
+            conc[person] = concentration(df).apply(lambda row: concentration_percent(row), axis = 1)
+        res["Average Concentration Percentage " + env] = conc.mean(axis=1)
+        conc = pd.DataFrame()
+    
+    res.reset_index(inplace=True) # Make Duration accessible by column name for plot() to use
+    res.plot(x="Duration",
+              y=['Average Concentration Percentage 1', 'Average Concentration Percentage 2', 'Average Concentration Percentage 3'],
+              kind='line',
+              xlabel='Duration (3 seconds / duration)',
+              ylabel="Average Concentration Percentage")	
+    plt.show()
 
 def analyze():
     """Entrance function for generating analytic results.
     """
     raw_data = parse()
-    cleaned_data = clean_all(raw_data)
-    df = cleaned_data["3"]["C"]['2022-11-25_00-22-23_3-C_I3T.txt']
-    conc = concentration(df)
-    # print(conc.iloc[:10, :5])
-    comp_t = completion_time(df)
-    # print(comp_t)
+    cleaned_data = clean_all(raw_data)    
+    # Concentration Analysis
+    concentration_analysis(cleaned_data)
+    
     pass    
 
 def concentration(df: pd.DataFrame) -> pd.DataFrame:
