@@ -25,7 +25,7 @@ def clean(df: pd.DataFrame) -> None:
     df = df.groupby(df["time"]).aggregate({col:"last" for col in df.columns})
     
     # Append 0-filled rows such that all files have same length
-    while(df.shape[0] < 200):
+    while(df.shape[0] < 180):
         new_row = pd.Series(0, index=df.columns)
         df.loc[df.shape[0] + 1] = new_row
     df["time"] = df.index

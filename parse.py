@@ -13,7 +13,7 @@ def parse():
     """
     raw_data = d_dict()
     curr_path = os.getcwd()
-    path = os.path.join(curr_path, 'data', 'raw')
+    path = os.path.join(curr_path, 'data', 'exp')
     for filename in os.listdir(path):
         identifier = re.search(r"\d+-[a-zA-Z]", filename).group(0).split("-")
         env = identifier[0]

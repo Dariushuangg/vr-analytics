@@ -17,9 +17,10 @@ def concentration_percentage_analysis(cleaned_data):
     conc = pd.DataFrame()
     res = pd.DataFrame()
     for env in ["1", "2", "3"]:
-        for person in cleaned_data[env]["C"].keys():
-            df = cleaned_data[env]["C"][person]
-            conc[person] = concentration(df).apply(lambda row: calculate_concentration_percent(row), axis = 1)
+        for task in ["C", "P", "F"]:
+            for person in cleaned_data[env][task].keys(): # for each environment-task combination, do:
+                df = cleaned_data[env][task][person]
+                conc[person] = concentration(df).apply(lambda row: calculate_concentration_percent(row), axis = 1)
         res["Average Concentration Percentage " + env] = conc.mean(axis=1)
         conc = pd.DataFrame()
     
@@ -35,15 +36,22 @@ def concentration_switches_analysis(cleaned_data):
     switches = list()
     res = dict()
     for env in ["1", "2", "3"]:
-        for person in cleaned_data[env]["C"].keys():
-            df = cleaned_data[env]["C"][person]
-            switch = calculate_concentration_switches(
-                concentration(df).apply(lambda row: is_looking_at(row), axis = 1).tolist()
-                )
-            switches.append(switch)
-        res["Average Concentration Switches " + env] = sum(switches) / len(switches)
+        for task in ["C", "P", "F"]:
+            for person in cleaned_data[env][task].keys():
+                df = cleaned_data[env][task][person]
+                switch = calculate_concentration_switches(
+                    concentration(df).apply(lambda row: is_looking_at(row), axis = 1).tolist()
+                    )
+                switches.append(switch)
+        res["Classroom " + env] = sum(switches) / (len(switches) * 3)
         switches = list()
-    pass 
+    
+    plt.bar(res.keys(), res.values())
+    plt.ylim([0,1])
+    for key in res.keys(): # add label to plot
+        plt.annotate(str(round(res[key], 3)), xy=(key, round(res[key], 3)), ha='center', va='bottom')
+    plt.title("Average Concentration Switches / Second")
+    plt.show()
 
 def concentration(df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -72,15 +80,6 @@ def concentration(df: pd.DataFrame) -> pd.DataFrame:
     
     return conc_df
 
-
-def completion_time(df: pd.DataFrame) -> int:
-    """
-    Analyze the time spent on completing the task
-    Args:
-        file (pd.DataFrame): cleaned dataframe representing a file from experiment
-    """
-    return df.iloc[-1, 0]
-
 def analyze():
     """
     Entrance function for generating analytic results.
@@ -88,11 +87,20 @@ def analyze():
     raw_data = parse()
     cleaned_data = clean_all(raw_data)    
     # concentration analysis
-    concentration_percentage_analysis(cleaned_data)
+    # concentration_percentage_analysis(cleaned_data)
     
     # concentration switches analysis
     concentration_switches_analysis(cleaned_data)
     pass   
+
+def completion_time(df: pd.DataFrame) -> int:
+    """
+    Analyze the time spent on completing the task
+    Args:
+        file (pd.DataFrame): cleaned dataframe representing a file from experiment
+    """
+    #return df.iloc[-1, 0] 
+    return -1 # deprecated
 
 analyze()
 # focus_time = [0.31, 0.33, 0.21]
