@@ -1,40 +1,17 @@
 from parse import parse
 from clean import *
+from conc_percent import *
+from conc_switch import *
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import math
 
-def calculate_concentration_switches(ilt: list):
-    """Count the percentage of time period in which a switch of focus occurs
-
-    Args:
-        df: A list representing where the user is looking at during each time period
-    """
-    count = 0
-    for i in range(1, len(ilt)):
-        count = count + 1 if ilt[i] - ilt[i - 1] != 0 else count
-    return count / len(ilt)
-
-def is_looking_at(row):
-    """Determine where the user is focusing on during a period of time
-
-    Args:
-        row (_type_):One row in the df output by concentration
-    """
-    r = [row["Molecule Frames"], row["UI Frames"], row["Environment Frames"]] # ugly, but works
-    return r.index(max(r))
-
-def calculate_concentration_percent(row):
-    """Calculate the percentage of time focus on content in one duration.
-    Args:
-        row: One row in the df output by concentration
-    """
-    concentrated_frame = row["Molecule Frames"] + row["UI Frames"]
-    total_frame = row["Total Frame"]
-    if concentrated_frame > total_frame:
-        concentrated_frame = total_frame
-    percentage = concentrated_frame / total_frame
-    return percentage
+def corr_focus_quiz(focus_time: list, quiz_score: list):
+    # https://numpy.org/doc/stable/reference/generated/numpy.corrcoef.html
+    a = np.corrcoef(focus_time, quiz_score)[0, 1]
+    print(a)
+    pass
 
 def concentration_percentage_analysis(cleaned_data):
     conc = pd.DataFrame()
@@ -66,19 +43,7 @@ def concentration_switches_analysis(cleaned_data):
             switches.append(switch)
         res["Average Concentration Switches " + env] = sum(switches) / len(switches)
         switches = list()
-    print(res)
-    pass
-
-def analyze():
-    """
-    Entrance function for generating analytic results.
-    """
-    raw_data = parse()
-    cleaned_data = clean_all(raw_data)    
-    # Concentration Analysis
-    # concentration_percentage_analysis(cleaned_data)
-    concentration_switches_analysis(cleaned_data)
-    pass    
+    pass 
 
 def concentration(df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -116,4 +81,20 @@ def completion_time(df: pd.DataFrame) -> int:
     """
     return df.iloc[-1, 0]
 
+def analyze():
+    """
+    Entrance function for generating analytic results.
+    """
+    raw_data = parse()
+    cleaned_data = clean_all(raw_data)    
+    # concentration analysis
+    concentration_percentage_analysis(cleaned_data)
+    
+    # concentration switches analysis
+    concentration_switches_analysis(cleaned_data)
+    pass   
+
 analyze()
+# focus_time = [0.31, 0.33, 0.21]
+# quiz_score = [0.31, 0.33, 0.21]
+# corr_focus_quiz(focus_time, quiz_score)
