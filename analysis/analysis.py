@@ -8,9 +8,7 @@ import matplotlib.pyplot as plt
 import math
 
 def corr_focus_quiz(focus_time: list, quiz_score: list):
-    # https://numpy.org/doc/stable/reference/generated/numpy.corrcoef.html
     a = np.corrcoef(focus_time, quiz_score)[0, 1]
-    print(a)
     pass
 
 def concentration_percentage_analysis(cleaned_data):
@@ -21,14 +19,14 @@ def concentration_percentage_analysis(cleaned_data):
             for person in cleaned_data[env][task].keys(): # for each environment-task combination, do:
                 df = cleaned_data[env][task][person]
                 conc[person] = concentration(df).apply(lambda row: calculate_concentration_percent(row), axis = 1)
-        res["Average Concentration Percentage " + env] = conc.mean(axis=1)
+        res["Classroom " + env] = conc.mean(axis=1)
         conc = pd.DataFrame()
     
     res.reset_index(inplace=True) # Make Duration accessible by column name for plot() to use
     res.plot(x="Duration",
-              y=['Average Concentration Percentage 1', 'Average Concentration Percentage 2', 'Average Concentration Percentage 3'],
+              y=['Classroom 1', 'Classroom 2', 'Classroom 3'],
               kind='line',
-              xlabel='Duration (3 seconds / duration)',
+              xlabel='Time Period (3 seconds / Time Period)',
               ylabel="Average Concentration Percentage")	
     plt.show()
 
@@ -50,7 +48,7 @@ def concentration_switches_analysis(cleaned_data):
     plt.ylim([0,1])
     for key in res.keys(): # add label to plot
         plt.annotate(str(round(res[key], 3)), xy=(key, round(res[key], 3)), ha='center', va='bottom')
-    plt.title("Average Concentration Switches / Second")
+    plt.title("Average Focus Switches / Second")
     plt.show()
 
 def concentration(df: pd.DataFrame) -> pd.DataFrame:
@@ -87,7 +85,7 @@ def analyze():
     raw_data = parse()
     cleaned_data = clean_all(raw_data)    
     # concentration analysis
-    # concentration_percentage_analysis(cleaned_data)
+    concentration_percentage_analysis(cleaned_data)
     
     # concentration switches analysis
     concentration_switches_analysis(cleaned_data)
